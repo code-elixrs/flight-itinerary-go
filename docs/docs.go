@@ -37,6 +37,49 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/itinerary/reconstruct": {
+            "post": {
+                "description": "Reconstructs the travel itinerary from a list of source-destination pairs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Itinerary"
+                ],
+                "summary": "Reconstruct Itinerary",
+                "parameters": [
+                    {
+                        "description": "Array of ticket pairs",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }`

@@ -16,4 +16,33 @@ paths:
       summary: Get health status
       tags:
       - Health
+  /api/v1/itinerary/reconstruct:
+    post:
+      consumes:
+      - application/json
+      description: Reconstructs the travel itinerary from a list of source-destination
+        pairs
+      parameters:
+      - description: Array of ticket pairs
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            items:
+              type: string
+            type: array
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Reconstruct Itinerary
+      tags:
+      - Itinerary
 swagger: "2.0"
