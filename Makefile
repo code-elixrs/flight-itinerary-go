@@ -19,3 +19,6 @@ docker-run:
 
 swagger:
 	swag init -g cmd/main.go
+
+test-integration:
+	go test -v ./... -run "Integration" -ginkgo.v

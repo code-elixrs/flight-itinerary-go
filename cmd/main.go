@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"flight-itinerary-go/internal/handler"
 	"flight-itinerary-go/internal/logger"
 	customMiddleware "flight-itinerary-go/internal/middleware"
 	"github.com/labstack/echo/v4"
@@ -34,19 +35,6 @@ func GetHealthStatus(ctx echo.Context) error {
 // Ticket represents a flight ticket with source and destination
 type Ticket [2]string
 
-// @Summary Reconstruct Itinerary
-// @Description Reconstructs the travel itinerary from a list of source-destination pairs
-// @Tags Itinerary
-// @Accept json
-// @Produce json
-// @Param input body []Ticket true "Array of ticket pairs"
-// @Success 200 {object} []string
-// @Router /api/v1/itinerary/reconstruct [post]
-func ReconstructItinerary(ctx echo.Context) error {
-	response := []string{"JFK", "LAX", "DXB", "SFO", "SJC"}
-	return ctx.JSON(http.StatusOK, response)
-}
-
 func main() {
 	log := logger.NewLogger()
 	defer log.Sync()
@@ -62,7 +50,7 @@ func main() {
 	v1 := echoServer.Group("/api/v1")
 	{
 		v1.GET("/health/status", GetHealthStatus)
-		v1.POST("/itinerary/reconstruct", ReconstructItinerary)
+		v1.POST("/itinerary/reconstruct", handler.ReconstructItinerary)
 	}
 	echoServer.GET("/swagger/*", echoSwagger.WrapHandler)
 
