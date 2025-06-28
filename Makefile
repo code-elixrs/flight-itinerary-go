@@ -22,3 +22,7 @@ swagger:
 
 test-integration:
 	go test -v ./... -run "Integration" -ginkgo.v
+
+# Run all tests
+test:
+	go test -v ./... -ginkgo.v
