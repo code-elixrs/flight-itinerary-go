@@ -16,3 +16,6 @@ docker-build:
 
 docker-run:
 	docker run -p 8080:8080 flight-itinerary-go:latest
+
+swagger:
+	swag init -g cmd/main.go

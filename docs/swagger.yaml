@@ -1,0 +1,19 @@
+info:
+  contact: {}
+paths:
+  /api/v1/health/status:
+    get:
+      description: Simple health status api
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get health status
+      tags:
+      - Health
+swagger: "2.0"

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  flight-itinerary:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v1/health/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
