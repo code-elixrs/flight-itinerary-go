@@ -167,7 +167,7 @@ This will run comprehensive tests covering:
 
 **Test the main endpoint**:
 ```bash
-curl -X POST http://localhost:8080/reconstruct-itinerary \
+curl -X POST http://localhost:8080/api/v1/itinerary/reconstruct \
   -H "Content-Type: application/json" \
   -d '[
       ["LAX", "DXB"],
@@ -191,7 +191,7 @@ curl http://localhost:8080/api/v1/health/status
 
 **Test error handling**:
 ```bash
-curl -X POST http://localhost:8080/api/v1itinerary/reconstruct \
+curl -X POST http://localhost:8080/api/v1/itinerary/reconstruct \
   -H "Content-Type: application/json" \
   -d '[
       ["NYC", "LAX"],
