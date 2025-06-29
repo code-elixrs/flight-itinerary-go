@@ -20,9 +20,14 @@ docker-run:
 swagger:
 	swag init -g cmd/main.go
 
+# Run integration tests only
 test-integration:
 	go test -v ./... -run "Integration" -ginkgo.v
 
 # Run all tests
 test:
 	go test -v ./... -ginkgo.v
+
+# Run unit tests only
+test-unit:
+	go test -v ./internal/... -ginkgo.v
