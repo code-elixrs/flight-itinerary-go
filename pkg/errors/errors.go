@@ -10,6 +10,7 @@ var (
 	ErrNoStartingPoint   = NewBusinessError("no valid starting point found")
 	ErrCircularRoute     = NewBusinessError("circular route detected")
 	ErrDisconnectedRoute = NewBusinessError("disconnected route found")
+	ErrInvalidTicket     = NewBusinessError("invalid ticket: source and destination cannot be empty")
 )
 
 // AppError represents application-specific errors

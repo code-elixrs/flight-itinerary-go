@@ -36,16 +36,27 @@ func (itineraryHandlerV1 *ItineraryHandler) ReconstructItinerary(ctx echo.Contex
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
 	logger := itineraryHandlerV1.logger.With(zap.String("request_id", requestID))
 
-	var request []model.Ticket
-
-	if err := ctx.Bind(&request); err != nil {
-		logger.Error("Binding failed with error: %+v", zap.Error(err))
+	validatedRequest := ctx.Get("validated_request")
+	if validatedRequest == nil {
+		logger.Error("Validated request not found in context")
 		return itineraryHandlerV1.handleError(ctx, errors.NewInternalError("request validation failed"))
 	}
-	logger.Info("Processing itinerary reconstruction request",
-		zap.Int("ticket_count", len(request)))
 
-	response, err := itineraryHandlerV1.itineraryService.ReconstructItinerary(request)
+	tickets := validatedRequest.([]model.Ticket)
+	request := model.ItineraryRequest{
+		Tickets: tickets,
+	}
+
+	logger.Info("Processing itinerary reconstruction request",
+		zap.Int("ticket_count", len(request.Tickets)))
+	tickets, err := request.ToTickets()
+	if err != nil {
+		logger.Warn("Failed to convert request to tickets", zap.Error(err))
+		return itineraryHandlerV1.handleError(ctx, err)
+	}
+
+	response, err := itineraryHandlerV1.itineraryService.ReconstructItinerary(tickets)
+
 	if err != nil {
 		logger.Error("Failed to reconstruct itinerary", zap.Error(err))
 		return itineraryHandlerV1.handleError(ctx, err)

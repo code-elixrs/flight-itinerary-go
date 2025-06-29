@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flight-itinerary-go/internal/service"
+	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -34,27 +35,30 @@ func GetHealthStatus(ctx echo.Context) error {
 }
 
 func main() {
-	log := logger.NewLogger()
-	defer log.Sync()
-	log.Info("Initializing...")
+	logger := logger.NewLogger()
+	defer logger.Sync()
+	logger.Info("Initializing...")
 
 	// Initialize services
-	itineraryService := service.NewItineraryService(log)
+	itineraryService := service.NewItineraryService(logger)
 
 	// Initialize handlers
-	itineraryHandler := handler.NewItineraryHandler(itineraryService, log)
+	itineraryHandler := handler.NewItineraryHandler(itineraryService, logger)
+
+	itineraryRequestValidator := customMiddleware.NewItineraryValidator(logger)
 	echoServer := echo.New()
 
 	//Global middleware
 	echoServer.Use(middleware.Recover())
 	echoServer.Use(middleware.CORS())
-	echoServer.Use(customMiddleware.LoggingMiddleware(log))
+	echoServer.Use(customMiddleware.LoggingMiddleware(logger))
 
 	// Routes
 	v1 := echoServer.Group("/api/v1")
 	{
 		v1.GET("/health/status", GetHealthStatus)
-		v1.POST("/itinerary/reconstruct", itineraryHandler.ReconstructItinerary)
+		v1.POST("/itinerary/reconstruct", itineraryHandler.ReconstructItinerary,
+			itineraryRequestValidator.Validate())
 	}
 	echoServer.GET("/swagger/*", echoSwagger.WrapHandler)
 
