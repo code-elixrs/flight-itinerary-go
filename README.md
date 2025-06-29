@@ -3,7 +3,7 @@ A Go-based web API that reconstructs complete flight itineraries from a collecti
 
 ## Features
 
-- **Single Endpoint**: POST `/api/v1//itinerary/reconstruct` accepts JSON payload with flight tickets
+- **Single Endpoint**: POST `/api/v1/itinerary/reconstruct` accepts JSON payload with flight tickets
 - **Itinerary Reconstruction**: Automatically determines the correct travel sequence
 - **Error Handling**: Comprehensive validation and error reporting
 - **Health Check**: GET `/health` endpoint for service monitoring
@@ -14,25 +14,20 @@ A Go-based web API that reconstructs complete flight itineraries from a collecti
 
 ### Reconstruct Itinerary
 
-**Endpoint**: `POST /api/v1//itinerary/reconstruct`
+**Endpoint**: `POST /api/v1/itinerary/reconstruct`
 
 **Request Body**:
-```json
-{
-  "tickets": [
+```json[
     ["LAX", "DXB"],
     ["JFK", "LAX"], 
     ["SFO", "SJC"],
     ["DXB", "SFO"]
   ]
-}
 ```
 
 **Response** (Success):
 ```json
-{
-  "itinerary": ["JFK", "LAX", "DXB", "SFO", "SJC"]
-}
+   ["JFK", "LAX", "DXB", "SFO", "SJC"]
 ```
 
 **Response** (Error):
@@ -50,7 +45,7 @@ A Go-based web API that reconstructs complete flight itineraries from a collecti
 ```json
 {
   "status": "healthy",
-  "service": "flight-itinerary-api"
+  "service": "flight-itinerary-go"
 }
 ```
 
