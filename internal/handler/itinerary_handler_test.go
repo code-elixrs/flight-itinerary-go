@@ -39,14 +39,14 @@ var _ = Describe("ItineraryHandler", func() {
 		handler1    *handler.ItineraryHandler
 		mockService *mockItineraryService
 		logger      *zap.Logger
-		e           *echo.Echo
+		echoServer  *echo.Echo
 	)
 
 	BeforeEach(func() {
 		logger = zap.NewExample()
 		mockService = &mockItineraryService{}
 		handler1 = handler.NewItineraryHandler(mockService, logger)
-		e = echo.New()
+		echoServer = echo.New()
 	})
 
 	Describe("ReconstructItinerary", func() {
@@ -65,12 +65,12 @@ var _ = Describe("ItineraryHandler", func() {
 				req := httptest.NewRequest(http.MethodPost, "/api/v1/itinerary/reconstruct", bytes.NewReader(reqBody))
 				req.Header.Set("Content-Type", "application/json")
 				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
+				ctx := echoServer.NewContext(req, rec)
 
 				// Set validated_request as []model.Ticket, not *model.ItineraryRequest
-				c.Set("validated_request", tickets)
+				ctx.Set("validated_request", tickets)
 
-				err := handler1.ReconstructItinerary(c)
+				err := handler1.ReconstructItinerary(ctx)
 
 				Expect(err).Should(BeNil())
 				Expect(rec.Code).To(Equal(http.StatusOK))
@@ -97,11 +97,11 @@ var _ = Describe("ItineraryHandler", func() {
 				req := httptest.NewRequest(http.MethodPost, "/api/v1/itinerary/reconstruct", bytes.NewReader(reqBody))
 				req.Header.Set("Content-Type", "application/json")
 				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
+				ctx := echoServer.NewContext(req, rec)
 
-				c.Set("validated_request", tickets)
+				ctx.Set("validated_request", tickets)
 
-				err := handler1.ReconstructItinerary(c)
+				err := handler1.ReconstructItinerary(ctx)
 
 				Expect(err).Should(BeNil())
 				Expect(rec.Code).To(Equal(http.StatusBadRequest))
@@ -117,11 +117,11 @@ var _ = Describe("ItineraryHandler", func() {
 			It("should return internal server error", func() {
 				req := httptest.NewRequest(http.MethodPost, "/api/v1/itinerary/reconstruct", nil)
 				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
+				ctx := echoServer.NewContext(req, rec)
 
 				// Not setting validated_request in context
 
-				err := handler1.ReconstructItinerary(c)
+				err := handler1.ReconstructItinerary(ctx)
 
 				Expect(err).Should(BeNil())
 				Expect(rec.Code).To(Equal(http.StatusInternalServerError))
@@ -137,11 +137,11 @@ var _ = Describe("ItineraryHandler", func() {
 
 				req := httptest.NewRequest(http.MethodPost, "/api/v1/itinerary/reconstruct", nil)
 				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
+				ctx := echoServer.NewContext(req, rec)
 
-				c.Set("validated_request", tickets)
+				ctx.Set("validated_request", tickets)
 
-				err := handler1.ReconstructItinerary(c)
+				err := handler1.ReconstructItinerary(ctx)
 
 				Expect(err).Should(BeNil())
 				Expect(rec.Code).To(Equal(http.StatusBadRequest))
