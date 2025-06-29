@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"flight-itinerary-go/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
 
@@ -32,15 +33,35 @@ func NewItineraryHandler(itineraryService service.ItineraryService, logger *zap.
 // @Success 200 {object} []string
 // @Router /api/v1/itinerary/reconstruct [post]
 func (itineraryHandlerV1 *ItineraryHandler) ReconstructItinerary(ctx echo.Context) error {
+	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
+	logger := itineraryHandlerV1.logger.With(zap.String("request_id", requestID))
+
 	var request []model.Ticket
 
 	if err := ctx.Bind(&request); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+		logger.Error("Binding failed with error: %+v", zap.Error(err))
+		return itineraryHandlerV1.handleError(ctx, errors.NewInternalError("request validation failed"))
 	}
+	logger.Info("Processing itinerary reconstruction request",
+		zap.Int("ticket_count", len(request)))
+
 	response, err := itineraryHandlerV1.itineraryService.ReconstructItinerary(request)
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
+		logger.Error("Failed to reconstruct itinerary", zap.Error(err))
+		return itineraryHandlerV1.handleError(ctx, err)
+	}
+	logger.Info("Successfully reconstructed itinerary",
+		zap.Strings("result", response))
+	return ctx.JSON(http.StatusOK, response)
+}
+
+func (itineraryHandlerV1 *ItineraryHandler) handleError(ctx echo.Context, err error) error {
+	if appErr, ok := err.(*errors.AppError); ok {
+		return ctx.JSON(appErr.Code, appErr)
 	}
 
-	return ctx.JSON(http.StatusOK, response)
+	// Handle unexpected errors
+	itineraryHandlerV1.logger.Error("Unexpected error", zap.Error(err))
+	internalErr := errors.NewInternalError("internal server error")
+	return ctx.JSON(internalErr.Code, internalErr)
 }

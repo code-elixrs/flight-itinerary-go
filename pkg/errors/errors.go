@@ -40,3 +40,12 @@ func NewValidationError(format string, args ...interface{}) *AppError {
 		Type:    "validation_error",
 	}
 }
+
+// NewInternalError creates a new internal server error
+func NewInternalError(message string) *AppError {
+	return &AppError{
+		Code:    http.StatusInternalServerError,
+		Message: message,
+		Type:    "internal_error",
+	}
+}
